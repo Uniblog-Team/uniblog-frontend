@@ -1,0 +1,46 @@
+name: Frontend CI
+
+# Disparadores: Se ejecuta en push a ramas feature/* y en Pull Requests hacia develop
+on:
+  push:
+    branches: [ "feature/**" ] # Para cambios en ramas de funcionalidad
+  pull_request:
+    branches: [ "develop" ] # Cuando se abre/actualiza un PR hacia develop
+
+jobs:
+  build-and-lint:
+    name: Build & Lint Frontend
+    runs-on: ubuntu-latest # Usar la última versión estable de Ubuntu como runner
+
+    strategy:
+      matrix:
+        node-version: [22.x] # Especifica la versión de Node.js que usa tu proyecto
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4 # Acción estándar para descargar tu código
+
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4 # Acción para configurar Node.js
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm' # Habilitar caché para dependencias de npm (acelera ejecuciones futuras)
+        # Si usas yarn, cambia 'npm' por 'yarn' arriba y los comandos de abajo
+
+    - name: Install dependencies
+      run: npm ci # 'npm ci' es mejor para CI, instala versiones exactas del package-lock.json
+      # Si usas yarn: run: yarn install --frozen-lockfile
+
+    - name: Run Linter (ESLint)
+      run: npm run lint # ASUNCIÓN: Tienes un script 'lint' en tu package.json (ej: "lint": "eslint .")
+      # Si el comando falla, el workflow fallará
+
+    - name: Build Project
+      run: npm run build # ASUNCIÓN: Tienes un script 'build' en tu package.json
+      # Esto verifica que el proyecto compile sin errores
+
+    # --- PASO PARA PRUEBAS (Cuando las tengas) ---
+    # - name: Run Tests
+    #   run: npm test # ASUNCIÓN: Tienes un script 'test' configurado
+    #   # Por ahora, si no hay tests o el script no existe, este paso podría fallar o pasar sin hacer nada.
+    #   # Cuando agregues tests (Jest, React Testing Library), este comando los ejecutará.

@@ -16,7 +16,7 @@ export default function Layout() {
       <Box
         component="main" // Semánticamente es el contenido principal
         sx={{
-          flexGrow: 0,
+          flexGrow: 1,
           padding: 0,
         }}
       >

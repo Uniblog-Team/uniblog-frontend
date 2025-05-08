@@ -55,7 +55,7 @@ export default function Home() {
       <Container 
         maxWidth="lg" 
         sx={{ 
-          position: 'relative', // Para que el contenido esté sobre el overlay
+          position: 'fixed', // Para que el contenido esté sobre el overlay
           zIndex: 2,            // Contenido encima del overlay
           height: '100%',        // Para que el Grid2 pueda alinearse bien si es necesario
           display: 'flex',      // Ayuda a centrar el contenido si es necesario
@@ -89,7 +89,7 @@ export default function Home() {
                 sx={{
                   fontFamily: 'TanMonCheri, sans-serif',
                   fontWeight: 600,
-                  fontSize: 'clamp(3.5rem, 8vw, 6rem)', // Grande y responsivo
+                  fontSize: 'clamp(3.5rem, 8vw, 10rem)', // Grande y responsivo
                   lineHeight: 1.2,
                   marginBottom: 2,
                   textShadow: '0px 2px 4px rgba(0,0,0,0.5)', // Sombra para legibilidad sobre imagen

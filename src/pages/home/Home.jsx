@@ -131,7 +131,7 @@ export default function Home() {
                   },
                 }}
               >
-                Comienza a leer
+                Comienza a explorar
               </Button>
             </Box>
           </Grid2>

@@ -44,11 +44,10 @@ jobs:
       run: npm run build # ASUNCIÓN: Tienes un script 'build' en tu package.json
       # Esto verifica que el proyecto compile sin errores
 
-    # --- PASO PARA PRUEBAS (Cuando las tengas) ---
-    # - name: Run Tests
-    #   run: npm test -- --coverage # ASUNCIÓN: Tienes un script 'test' configurado
-    #   # Por ahora, si no hay tests o el script no existe, este paso podría fallar o pasar sin hacer nada.
-    #   # Cuando se agruegen tests (Jest, React Testing Library), este comando los ejecutará.
+
+    - name: Run Tests
+      run: npm test -- --coverage 
+
 
     # --- PASO DE SCANNER DE SONARCLOUD ---
     # Se ejecutará SÓLO en Pull Requests hacia develop o main.

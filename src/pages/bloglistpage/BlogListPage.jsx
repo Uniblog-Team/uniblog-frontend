@@ -63,7 +63,7 @@ const blogCategories = [
   { id: 'productividad', name: 'Productividad' }, // Sin blogs en el mock data
   { id: 'diseno-ux', name: 'Diseño UX/UI' },
   { id: 'inteligencia-artificial', name: 'Inteligencia Artificial' },
-  { id: 'noticias', name: 'Noticias' }, // Sin blogs en el mock data
+
 ];
 
 

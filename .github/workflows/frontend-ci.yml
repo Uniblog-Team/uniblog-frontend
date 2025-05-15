@@ -5,20 +5,25 @@ on:
   push:
     branches: [ "feature/**" ] # Para cambios en ramas de funcionalidad
   pull_request:
-    branches: [ "develop" ] # Cuando se abre/actualiza un PR hacia develop
+    types: [opened, synchronize, reopened]
+    branches: [ "develop", "main" ] # Cuando se abre/actualiza un PR hacia develop
 
 jobs:
-  build-and-lint:
-    name: Build & Lint Frontend
+  build-lint-scan:
+    name: BBuild, Lint & Scan Frontend
     runs-on: ubuntu-latest # Usar la última versión estable de Ubuntu como runner
 
     strategy:
       matrix:
-        node-version: [22.x] # Especifica la versión de Node.js que usa tu proyecto
+        node-version: [22.x]
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4 # Acción estándar para descargar tu código
+      with:
+        # Necesario para que SonarCloud pueda analizar correctamente los PRs
+        # Obtiene todo el historial para que Sonar pueda diferenciar entre código nuevo y antiguo.
+        fetch-depth: 0
 
     - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4 # Acción para configurar Node.js
@@ -39,8 +44,16 @@ jobs:
       run: npm run build # ASUNCIÓN: Tienes un script 'build' en tu package.json
       # Esto verifica que el proyecto compile sin errores
 
-    # --- PASO PARA PRUEBAS (Cuando las tengas) ---
-    # - name: Run Tests
-    #   run: npm test # ASUNCIÓN: Tienes un script 'test' configurado
-    #   # Por ahora, si no hay tests o el script no existe, este paso podría fallar o pasar sin hacer nada.
-    #   # Cuando agregues tests (Jest, React Testing Library), este comando los ejecutará.
+
+    - name: Run Tests
+      run: npm test -- --coverage 
+
+
+    # --- PASO DE SCANNER DE SONARCLOUD ---
+    # Se ejecutará SÓLO en Pull Requests hacia develop o main.
+    - name: SonarCloud Scan
+      if: github.event_name == 'pull_request'
+      uses: SonarSource/sonarqube-scan-action@v4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

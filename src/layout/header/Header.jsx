@@ -17,7 +17,11 @@ export default function Header() {
             }}    
         >
             <Toolbar>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                <Typography
+                 variant="h6" 
+                 component="div"
+                 sx={{ flexGrow: 1, fontFamily: 'TanMonCheri, sans-serif', fontWeight: 'bold' }}
+                >
                     Uniblog
                 </Typography>
             <Button

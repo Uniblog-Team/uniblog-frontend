@@ -7,6 +7,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Grid2 } from '@mui/material';
 import CategoryFilter from '../../components/CategoryFilter';
 import BlogPreviewCard from '../../components/BlogPreviewCard';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+
 
 // Simulación de datos con categorías
 const mockBlogData = [
@@ -136,6 +139,16 @@ const BlogListPage = () => {
       <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 3 }}>
         Nuestros Blogs
       </Typography>
+
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <Button
+        variant="outlined"
+        color="primary"
+        onClick={() => navigate('/crear')}
+        >
+        Crear nuevo artículo
+        </Button>
+      </Box>
 
       {/* Filtro de Categorías */}
       <CategoryFilter

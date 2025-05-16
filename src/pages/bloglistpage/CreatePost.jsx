@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Container, TextField, Typography, Button, Box } from '@mui/material';
 
 export default function CreatePost() {
@@ -6,6 +6,7 @@ export default function CreatePost() {
   const [body, setBody] = useState('');
   const [lastSaved, setLastSaved] = useState(null);
   const [error, setError] = useState('');
+  const bodyRef = useRef(null);
 
   const validateTitle = (text) => {
     if (text.length > 100) {
@@ -17,15 +18,13 @@ export default function CreatePost() {
   };
 
   const handleSave = () => {
-    if (!validateTitle(title)) {
-      return;
-    }
-    
+    if (!validateTitle(title)) return;
+
     if (!title.trim() || !body.trim()) {
       setError('El título y cuerpo del artículo son obligatorios.');
       return;
     }
-    
+
     console.log('Guardado manual:', { title, body });
     setLastSaved(new Date().toLocaleTimeString());
     setError('');
@@ -47,30 +46,27 @@ export default function CreatePost() {
     return () => clearInterval(interval);
   }, [title, body]);
 
-  const formatTextAsHeading = () => {
-    // Implementación básica para añadir formato de encabezado
-    const selection = document.getSelection();
+  const formatSelection = (formatFn) => {
+    const selection = window.getSelection();
     if (selection && selection.toString()) {
       const selectedText = selection.toString();
-      const newBody = body.replace(selectedText, `# ${selectedText}`);
-      setBody(newBody);
+      const formatted = formatFn(selectedText);
+      setBody((prev) => prev.replace(selectedText, formatted));
     }
   };
 
+  const formatTextAsHeading = () => {
+    formatSelection((text) => `# ${text}`);
+  };
+
   const formatTextAsParagraph = () => {
-    // Implementación básica para añadir formato de párrafo
-    const selection = document.getSelection();
-    if (selection && selection.toString()) {
-      const selectedText = selection.toString();
-      const newBody = body.replace(selectedText, `\n\n${selectedText}\n\n`);
-      setBody(newBody);
-    }
+    formatSelection((text) => `\n\n${text}\n\n`);
   };
 
   return (
     <Container data-testid="create-post-container">
       <Typography variant="h4" gutterBottom>Crear nuevo artículo</Typography>
-      
+
       {error && (
         <Typography color="error" variant="body2" sx={{ mb: 2 }} data-testid="error-message">
           {error}
@@ -117,6 +113,7 @@ export default function CreatePost() {
         minRows={8}
         value={body}
         onChange={(e) => setBody(e.target.value)}
+        inputRef={bodyRef}
       />
 
       <Button 

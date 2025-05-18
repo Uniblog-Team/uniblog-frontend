@@ -40,7 +40,7 @@ const BlogPostContent = ({ blog }) => {
           {blog.authorAvatarUrl ? (
             <Avatar src={blog.authorAvatarUrl} alt={blog.authorName} sx={{ width: 32, height: 32, mr: 1 }} />
           ) : (
-            <Avatar sx={{ width: 32, height: 32, mr: 1, bgcolor: 'secondary.main' }}>
+            <Avatar data-testid="author-initials-avatar" sx={{ width: 32, height: 32, mr: 1, bgcolor: 'secondary.main' }}>
               {getInitials(blog.authorName)}
             </Avatar>
           )}

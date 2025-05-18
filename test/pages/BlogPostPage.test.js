@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 // src/pages/BlogPostPage.test.jsx
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import BlogPostPage from '../../src/pages/bloglistpage/BlogPostPage'; // Ajusta la ruta si es necesario

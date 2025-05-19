@@ -9,6 +9,7 @@ import { CssBaseline } from "@mui/material";
 const Home = lazy(() => import("./pages/home/Home"));
 const BlogListPage = lazy(() => import("./pages/bloglistpage/BlogListPage.jsx"))
 const BlogPostPage = lazy(() => import("./pages/bloglistpage/BlogPostPage.jsx"))
+const Register = lazy(() => import("./pages/register/register.jsx"))
 
 const root = createRoot(document.getElementById("root"));
 
@@ -21,10 +22,12 @@ root.render(
           <Route element={<Layout />}> {/* El Layout envuelve las rutas hijas */}
             <Route index path="/" element={<Home />} />
             <Route index path="/inicio" element={<BlogListPage />} />
-            <Route path="/blog/:blogId" element={<BlogPostPage />} /> {/* Nueva ruta */}
+            <Route path="/blog/:blogId" element={<BlogPostPage />} /> 
+            {/* Nueva ruta */}
             {/* Aquí puedes agregar más rutas que usarán el mismo Layout */}
             {/* <Route path="/otra-pagina" element={<OtraPagina />} /> */}
           </Route>
+           <Route path="/register" element={<Register />} />
           {/* Aquí puedes agregar rutas que NO usen este Layout */}
           {/* <Route path="/login" element={<LoginPage />} /> */}
         </Routes>

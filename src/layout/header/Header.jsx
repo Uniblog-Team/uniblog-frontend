@@ -1,10 +1,12 @@
 import { red } from "@mui/material/colors";
 import "./Header.css";
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
     
     const lightred = red[100];
+    const navigate = useNavigate();
 
     return (
         <AppBar
@@ -40,6 +42,24 @@ export default function Header() {
                 }}
             >
                 Inicia
+            </Button>
+                        <Button
+                variant="contained"
+                onClick={() => navigate("/register")}
+                disableElevation
+                sx={{
+                    backgroundColor: 'black', // Fondo negro
+                    color: 'white',           // Letra blanca
+                    borderRadius: '20px',     // Bordes redondeados (ajusta el valor a tu gusto)
+                    padding: '6px 16px',      // Un poco de padding para que se vea mejor
+                    textTransform: 'none',    // Para que "Inicia" no se ponga en mayúsculas automáticamente
+                    fontWeight: 'bold',       // Letra en negrita
+                    '&:hover': {              // Estilo al pasar el mouse por encima
+                        backgroundColor: 'grey.800', // Un gris oscuro, un poco más claro que el negro
+                    },
+                }}
+            >
+                Registro
             </Button>
             </Toolbar>
 

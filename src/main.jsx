@@ -6,9 +6,12 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import Layout from "./layout/Layout.jsx";
 import { CssBaseline } from "@mui/material";
 
+import Perfil from "./pages/perfil/Perfil.jsx";
+
 const Home = lazy(() => import("./pages/home/Home"));
 const BlogListPage = lazy(() => import("./pages/bloglistpage/BlogListPage.jsx"))
 const BlogPostPage = lazy(() => import("./pages/bloglistpage/BlogPostPage.jsx"))
+
 
 const root = createRoot(document.getElementById("root"));
 
@@ -22,6 +25,9 @@ root.render(
             <Route index path="/" element={<Home />} />
             <Route index path="/inicio" element={<BlogListPage />} />
             <Route path="/blog/:blogId" element={<BlogPostPage />} /> {/* Nueva ruta */}
+            <Route path="/perfil" element={<Perfil />} />
+            {/* Aquí puedes agregar más rutas que usarán el mismo Layout */}
+            {/* <Route path="/otra-pagina" element={<OtraPagina />} /> */}
             {/* Aquí puedes agregar más rutas que usarán el mismo Layout */}
             {/* <Route path="/otra-pagina" element={<OtraPagina />} /> */}
           </Route>

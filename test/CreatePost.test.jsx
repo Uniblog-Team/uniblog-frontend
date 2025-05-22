@@ -167,7 +167,6 @@ describe('CreatePost Component', () => {
     render(<CreatePost />);
     
     const titleInput = screen.getByTestId('input-title').querySelector('input');
-    const saveButton = screen.getByTestId('save-button');
     
     const longTitle = 'a'.repeat(101);
     fireEvent.change(titleInput, { target: { value: longTitle } });

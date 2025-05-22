@@ -1,17 +1,23 @@
 name: Frontend CI
 
-# Disparadores: Se ejecuta en push a ramas feature/* y en Pull Requests hacia develop
 on:
   push:
-    branches: [ "feature/**" ] # Para cambios en ramas de funcionalidad
+    branches: [ "feature/**" ]
+
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [ "develop", "main" ] # Cuando se abre/actualiza un PR hacia develop
+    branches: [ "develop", "main" ]
+
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    branches: [ "develop", "main" ]
 
 jobs:
-  build-lint-scan:
-    name: BBuild, Lint & Scan Frontend
-    runs-on: ubuntu-latest # Usar la última versión estable de Ubuntu como runner
+  # Job 1: Build, Lint & Test (Seguro para ejecutar código del fork)
+  build-lint-test:
+    name: Build, Lint & Test Frontend
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
 
     strategy:
       matrix:
@@ -19,40 +25,74 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4 # Acción estándar para descargar tu código
+      uses: actions/checkout@v4
       with:
-        # Necesario para que SonarCloud pueda analizar correctamente los PRs
-        # Obtiene todo el historial para que Sonar pueda diferenciar entre código nuevo y antiguo.
         fetch-depth: 0
 
     - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4 # Acción para configurar Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm' # Habilitar caché para dependencias de npm (acelera ejecuciones futuras)
-        # Si usas yarn, cambia 'npm' por 'yarn' arriba y los comandos de abajo
+        cache: 'npm'
 
     - name: Install dependencies
-      run: npm ci # 'npm ci' es mejor para CI, instala versiones exactas del package-lock.json
-      # Si usas yarn: run: yarn install --frozen-lockfile
+      run: npm ci
 
     - name: Run Linter (ESLint)
-      run: npm run lint # ASUNCIÓN: Tienes un script 'lint' en tu package.json (ej: "lint": "eslint .")
-      # Si el comando falla, el workflow fallará
+      run: npm run lint
 
     - name: Build Project
-      run: npm run build # ASUNCIÓN: Tienes un script 'build' en tu package.json
-      # Esto verifica que el proyecto compile sin errores
-
+      run: npm run build
 
     - name: Run Tests
-      run: npm test -- --coverage 
+      run: npm test -- --coverage
 
+    # --- NUEVO PASO: Subir el reporte de cobertura como un Artifact ---
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v4 # Acción para subir archivos
+      with:
+        name: coverage-report # Nombre del artifact
+        path: coverage/lcov.info # Ruta del archivo a subir
+        # Se pueden añadir más archivos o directorios si son necesarios, ej:
+        # path: |
+        #   coverage/lcov.info
+        #   sonar-project.properties # Si lo necesitas para Sonar en el otro job
+      if: always() 
+        # Siempre intenta subir el artifact, incluso si los tests fallan.
+        # Esto es útil para depurar si el reporte no se generó.
 
-    # --- PASO DE SCANNER DE SONARCLOUD ---
-    # Se ejecutará SÓLO en Pull Requests hacia develop o main.
+  # Job 2: SonarCloud Scan (Seguro, se ejecuta en el repositorio base con secretos)
+  sonar_scan:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target'
+    # El job sonar_scan DEBE esperar a que build-lint-test termine y suba el artifact.
+    needs: build-lint-test
+
+    steps:
+    - name: Checkout repository (Base Branch)
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # --- NUEVO PASO: Descargar el reporte de cobertura como un Artifact ---
+    - name: Download Coverage Report
+      uses: actions/download-artifact@v4 # Acción para descargar artifacts
+      with:
+        name: coverage-report # Debe coincidir con el nombre usado para subir
+        path: coverage/ # Ruta donde se descargará el archivo en este job.
+                        # Esto creará 'coverage/lcov.info' si el artifact es solo ese archivo.
+
+    - name: Set up Node.js for Sonar Scan
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+
+    - name: Install dependencies for Sonar Scan (if needed for analysis)
+      run: npm ci
+
     - name: SonarCloud Scan
-      if: github.event_name == 'pull_request'
       uses: SonarSource/sonarqube-scan-action@v4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

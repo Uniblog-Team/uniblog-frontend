@@ -1,7 +1,7 @@
-
-//jest.setup.js
+/* eslint-disable no-undef */
 import '@testing-library/jest-dom';
 
-const { TextEncoder, TextDecoder } = require('util');
+import { TextEncoder, TextDecoder } from 'util';
+
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;

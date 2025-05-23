@@ -15,7 +15,6 @@ npm install
 Esto instalará todas las dependencias definidas en `package.json`.
 
 ---
-<!-- Trigger test -->
 ### Correr la aplicación en desarrollo
 
 Para iniciar el servidor de desarrollo:

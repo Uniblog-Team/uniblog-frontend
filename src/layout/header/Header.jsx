@@ -1,6 +1,7 @@
 import { red } from "@mui/material/colors";
 import "./Header.css";
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
+import { Link } from "react-router";
 
 export default function Header() {
     
@@ -41,6 +42,12 @@ export default function Header() {
             >
                 Inicia
             </Button>
+            <Button variant="text">
+                <Link to="/perfil" >
+                    Perfil
+                </Link>
+            </Button>
+
             </Toolbar>
 
         </AppBar>

@@ -2,23 +2,28 @@ name: Frontend CI
 
 on:
   push:
-    branches: [ "feature/**" ]
+    branches: [ "feature/**" ] # Para cambios en ramas de funcionalidad
 
-  pull_request:
+  pull_request: # Este trigger es para el "primer paso" de CI (Build, Lint, Test)
     types: [opened, synchronize, reopened]
-    branches: [ "develop", "main" ]
+    branches: [ "develop", "main" ] # Cuando se abre/actualiza un PR hacia develop/main
 
-  pull_request_target:
+  pull_request_target: # Este trigger es EXCLUSIVO para SonarCloud (y tiene acceso a secretos)
     types: [opened, synchronize, reopened]
     branches: [ "develop", "main" ]
 
 jobs:
   # Job 1: Build, Lint & Test (Seguro para ejecutar código del fork)
+  # Este job se dispara con 'pull_request' y 'push'.
+  # Se ejecuta en el contexto del fork (para PRs) o de la rama (para push).
+  # NO tiene acceso a SONAR_TOKEN, por lo que ejecutar código del fork aquí es seguro.
   build-lint-test:
     name: Build, Lint & Test Frontend
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
-
+    if: github.event_name == 'pull_request' || github.event_name == 'push' # Se mantiene la lógica original
+    permissions:
+      contents: read # Solo lectura de contenido
+      actions: read # Solo lectura de acciones
     strategy:
       matrix:
         node-version: [22.x]
@@ -32,7 +37,7 @@ jobs:
     - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: ${{ matrix.matrix.node-version }}
         cache: 'npm'
 
     - name: Install dependencies
@@ -47,41 +52,44 @@ jobs:
     - name: Run Tests
       run: npm test -- --coverage
 
-    # --- NUEVO PASO: Subir el reporte de cobertura como un Artifact ---
+    # Subir el reporte de cobertura como un Artifact
     - name: Upload Coverage Report
-      uses: actions/upload-artifact@v4 # Acción para subir archivos
+      uses: actions/upload-artifact@v4
       with:
-        name: coverage-report # Nombre del artifact
-        path: coverage/lcov.info # Ruta del archivo a subir
-        # Se pueden añadir más archivos o directorios si son necesarios, ej:
-        # path: |
-        #   coverage/lcov.info
-        #   sonar-project.properties # Si lo necesitas para Sonar en el otro job
-      if: always() 
-        # Siempre intenta subir el artifact, incluso si los tests fallan.
-        # Esto es útil para depurar si el reporte no se generó.
+        name: coverage-report-${{ github.sha }} # Nombre dinámico para evitar colisiones si hubiera varios PRs simultáneos
+        path: coverage/lcov.info
+      if: always() # Siempre intenta subir el artifact, incluso si los tests fallan.
+
 
   # Job 2: SonarCloud Scan (Seguro, se ejecuta en el repositorio base con secretos)
+  # Este job SÓLO se dispara con 'pull_request_target'.
+  # Accede a SONAR_TOKEN de forma segura porque el código ejecutado es de la rama base.
   sonar_scan:
     name: SonarCloud Scan
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request_target'
-    # El job sonar_scan DEBE esperar a que build-lint-test termine y suba el artifact.
-    needs: build-lint-test
+    needs: build-lint-test # ¡Crucial! Asegura que build-lint-test ha terminado y subido el artifact.
+
+    # Permisos específicos para SonarCloud, minimizando el acceso.
+    permissions:
+      contents: read        # Para checkout del repo (rama base)
+      pull-requests: write  # Para enviar comentarios al PR
+      security-events: write # Para enviar resultados de seguridad (ej. Code Quality y Code Smells)
 
     steps:
     - name: Checkout repository (Base Branch)
       uses: actions/checkout@v4
       with:
+        # Aquí, el checkout se hace a la RAMA BASE (develop o main) del PR.
+        # Esto es clave para la seguridad: no se ejecuta código arbitrario del fork.
         fetch-depth: 0
 
-    # --- NUEVO PASO: Descargar el reporte de cobertura como un Artifact ---
+    # Descargar el reporte de cobertura
     - name: Download Coverage Report
-      uses: actions/download-artifact@v4 # Acción para descargar artifacts
+      uses: actions/download-artifact@v4
       with:
-        name: coverage-report # Debe coincidir con el nombre usado para subir
-        path: coverage/ # Ruta donde se descargará el archivo en este job.
-                        # Esto creará 'coverage/lcov.info' si el artifact es solo ese archivo.
+        name: coverage-report-${{ needs.build-lint-test.outputs.sha }} # Descarga el artifact específico del job anterior
+        path: coverage/
 
     - name: Set up Node.js for Sonar Scan
       uses: actions/setup-node@v4

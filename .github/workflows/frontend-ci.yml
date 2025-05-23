@@ -1,95 +1,81 @@
 name: Frontend CI
 on:
-  push:
-    branches: [ "feature/**" ]
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches: [ "develop", "main" ]
   pull_request_target:
     types: [opened, synchronize, reopened]
     branches: [ "develop", "main" ]
 
 jobs:
-  # Job 1: Build, Lint & Test (Seguro para ejecutar código del fork)
   build-lint-test:
     name: Build, Lint & Test Frontend
     runs-on: ubuntu-latest
-    # Ahora también se ejecuta para pull_request_target
-    if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'pull_request_target'
-    # Limitar permisos para este job
-    permissions:
-      contents: read
-      actions: read
     strategy:
       matrix:
         node-version: [22.x]
+    permissions:
+      contents: read
+      actions: read
     steps:
-    - name: Checkout repository
+    - name: Checkout PR code (from fork)
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        # Para pull_request_target, hacer checkout del código del PR (head)
-        ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+        ref: ${{ github.event.pull_request.head.sha }}
     
-    - name: Set up Node.js ${{ matrix.node-version }}
+    - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    
+
     - name: Install dependencies
       run: npm ci
-    
-    - name: Run Linter (ESLint)
+
+    - name: Run Linter
       run: npm run lint
-    
+
     - name: Build Project
       run: npm run build
-    
+
     - name: Run Tests
       run: npm test -- --coverage
-    
-    # Subir el reporte de cobertura como un Artifact
+
     - name: Upload Coverage Report
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage/lcov.info
-      if: always()
 
-  # Job 2: SonarCloud Scan (Seguro, se ejecuta en el repositorio base con secretos)
   sonar_scan:
     name: SonarCloud Scan
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request_target'
     needs: build-lint-test
-    # Permisos explícitos para SonarCloud
     permissions:
       contents: read
       pull-requests: write
       security-events: write
     steps:
-    - name: Checkout repository (Base Branch)
+    - name: Checkout PR code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
-    # Descargar el reporte de cobertura
+        ref: ${{ github.event.pull_request.head.sha }}
+
     - name: Download Coverage Report
       uses: actions/download-artifact@v4
       with:
         name: coverage-report
         path: coverage/
-    
-    - name: Set up Node.js for Sonar Scan
+
+    - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 22.x
         cache: 'npm'
-    
-    - name: Install dependencies for Sonar Scan (if needed for analysis)
+
+    - name: Install dependencies
       run: npm ci
-    
+
     - name: SonarCloud Scan
       uses: SonarSource/sonarqube-scan-action@v4
       env:

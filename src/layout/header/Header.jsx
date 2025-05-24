@@ -1,10 +1,12 @@
 import { red } from "@mui/material/colors";
 import "./Header.css";
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
     
     const lightred = red[100];
+    const navigate = useNavigate();
 
     return (
         <AppBar
@@ -27,6 +29,8 @@ export default function Header() {
             <Button
                 variant="contained"
                 disableElevation
+                onClick={() => navigate('/login')}
+
                 sx={{
                     backgroundColor: 'black', // Fondo negro
                     color: 'white',           // Letra blanca

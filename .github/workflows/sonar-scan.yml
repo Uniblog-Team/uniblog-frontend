@@ -10,12 +10,24 @@ jobs:
   sonarcloud-analysis:
     name: SonarCloud Analysis for PRs
     runs-on: ubuntu-latest
-    # Solo ejecuta este job si el workflow "Frontend CI" fue por un PR y fue exitoso
-    if: >
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success'
-
+    # TEMPORALMENTE COMENTAMOS EL IF PARA VER SI EL WORKFLOW SE DISPARA
+    # if: >
+    #   github.event.workflow_run.event == 'pull_request' &&
+    #   github.event.workflow_run.conclusion == 'success'
     steps:
+      - name: Dump GitHub context for debugging
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "Workflow 'SonarCloud PR Scan' ha sido disparado."
+          echo "Evento que disparó 'Frontend CI': ${{ github.event.workflow_run.event }}"
+          echo "Conclusión de 'Frontend CI': ${{ github.event.workflow_run.conclusion }}"
+          echo "SHA del Head de 'Frontend CI': ${{ github.event.workflow_run.head_sha }}"
+          echo "Pull Requests asociados a 'Frontend CI':"
+          echo '${{ toJson(github.event.workflow_run.pull_requests) }}'
+          echo "--- Full GitHub Context ---"
+          echo "$GITHUB_CONTEXT"
+
       - name: Checkout PR code
         uses: actions/checkout@v4
         with:

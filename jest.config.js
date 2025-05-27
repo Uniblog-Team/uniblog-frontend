@@ -1,5 +1,6 @@
 // jest.config.js
 export default {
+  
     // El entorno de prueba que se utilizará para las pruebas
     testEnvironment: 'jest-environment-jsdom',
   

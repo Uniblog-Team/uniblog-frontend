@@ -29,6 +29,8 @@ export default function Header() {
             <Button
                 variant="contained"
                 disableElevation
+                onClick={() => navigate('/login')}
+
                 sx={{
                     backgroundColor: 'black', // Fondo negro
                     color: 'white',           // Letra blanca

@@ -53,4 +53,13 @@ export default [
       // 'jest/valid-expect': 'error',
     },
   },
+ {
+  files: ['jest.setup.js'],
+  languageOptions: {
+    globals: {
+      ...globals.node,
+    },
+    sourceType: 'module', // Usa módulos ES
+  },
+},
 ]

@@ -10,6 +10,7 @@ const Home = lazy(() => import("./pages/home/Home"));
 const BlogListPage = lazy(() => import("./pages/bloglistpage/BlogListPage.jsx"))
 const BlogPostPage = lazy(() => import("./pages/bloglistpage/BlogPostPage.jsx"))
 const Register = lazy(() => import("./pages/register/register.jsx"))
+const Login = lazy(() => import("./pages/login/Login.jsx"))
 
 const root = createRoot(document.getElementById("root"));
 
@@ -28,6 +29,8 @@ root.render(
             {/* <Route path="/otra-pagina" element={<OtraPagina />} /> */}
           </Route>
            <Route path="/register" element={<Register />} />
+           <Route path="/login" element={<Login />} /> 
+
           {/* Aquí puedes agregar rutas que NO usen este Layout */}
           {/* <Route path="/login" element={<LoginPage />} /> */}
         </Routes>

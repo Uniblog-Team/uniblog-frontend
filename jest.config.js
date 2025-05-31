@@ -47,7 +47,10 @@ export default {
       "**/__tests__/**/*.[jt]s?(x)", // Archivos en carpetas __tests__
       "**/?(*.)+(spec|test).[tj]s?(x)" // Archivos con .spec.js/jsx o .test.js/jsx
     ],
+    
   
     // Verbose output
     verbose: true,
   };
+
+  

@@ -65,11 +65,11 @@ jobs:
         
         if [ "$BRANCH_NAME" = "main" ]; then
           echo "Deploying to production..."
-          netlify deploy --dir=build --prod \
+          netlify deploy --dir=dist --prod \
             --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
         else
           echo "Deploying preview from branch: $BRANCH_NAME"
-          netlify deploy --dir=build \
+          netlify deploy --dir=dist \
             --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
         fi
       env:

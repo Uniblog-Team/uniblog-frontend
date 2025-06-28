@@ -17,6 +17,11 @@ jobs:
       matrix:
         node-version: [22.x]
 
+    permissions:
+      pull-requests: write
+      issues: write # Necesario para crear/actualizar comentarios en el PR
+      contents: read
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4 # Acción estándar para descargar tu código
@@ -60,7 +65,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Deploy to Netlify and Capture URL
-      id: netlify-deploy # Le damos un ID para referenciar su output
+      id: netlify-deploy
       run: |
         BRANCH_NAME=${{ github.head_ref || github.ref_name }}
         
@@ -70,8 +75,6 @@ jobs:
             --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
         else
           echo "Deploying preview from branch: $BRANCH_NAME"
-          # Usamos --json para obtener una salida estructurada y jq para extraer la URL
-          # Guardamos la URL en una variable de salida del paso
           DEPLOY_OUTPUT=$(netlify deploy --dir=dist --json \
             --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID)
           
@@ -84,7 +87,6 @@ jobs:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
-    # --- PASO PARA COMENTAR EN EL PR ---
     - name: Post Preview URL to PR
       if: github.event_name == 'pull_request' && steps.netlify-deploy.outputs.preview_url
       uses: peter-evans/create-or-update-comment@v4
@@ -96,4 +98,4 @@ jobs:
 
           Puedes revisar los cambios en vivo aquí:
           **[${{ steps.netlify-deploy.outputs.preview_url }}](${{ steps.netlify-deploy.outputs.preview_url }})**
-        update-mode: replace
+        edit-mode: replace

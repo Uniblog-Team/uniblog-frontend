@@ -59,49 +59,41 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-    - name: Deploy to Netlify (Preview or Prod)
-      id: netlify_deploy
+    - name: Deploy to Netlify and Capture URL
+      id: netlify-deploy # Le damos un ID para referenciar su output
       run: |
-        BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
-
+        BRANCH_NAME=${{ github.head_ref || github.ref_name }}
+        
         if [ "$BRANCH_NAME" = "main" ]; then
           echo "Deploying to production..."
           netlify deploy --dir=dist --prod \
-            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID \
-            --json > deploy_output.json
+            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
         else
           echo "Deploying preview from branch: $BRANCH_NAME"
-          netlify deploy --dir=dist \
-            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID \
-            --json > deploy_output.json
+          # Usamos --json para obtener una salida estructurada y jq para extraer la URL
+          # Guardamos la URL en una variable de salida del paso
+          DEPLOY_OUTPUT=$(netlify deploy --dir=dist --json \
+            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID)
+          
+          PREVIEW_URL=$(echo $DEPLOY_OUTPUT | jq -r .deploy_url)
+          
+          echo "Preview URL: $PREVIEW_URL"
+          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
         fi
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
-    - name: Generate URL Preview
-      id: url_preview
-      if: github.ref != 'refs/heads/main'
-      run: |
-        PREVIEW_URL=$(jq -r '.deploy_url' deploy_output.json)
-        echo "netlify_preview_url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
-
-    - name: Comment URL Preview on PR
-      uses: actions/github-script@v7
-      if: github.ref != 'refs/heads/main'
+    # --- PASO PARA COMENTAR EN EL PR ---
+    - name: Post Preview URL to PR
+      if: github.event_name == 'pull_request' && steps.netlify-deploy.outputs.preview_url
+      uses: peter-evans/create-or-update-comment@v4
       with:
-        script: |
-          const previewUrl = "${{ steps.url_preview.outputs.netlify_preview_url }}";
-          const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            commit_sha: context.sha,
-          });
-          if (pulls.length > 0) {
-            const pr = pulls[0];
-            await github.rest.issues.createComment({
-              issue_number: pr.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🚀 **Preview URL:**\n\n${previewUrl}`
-            });
-          } else {
-            console.log('No pull request found for this commit.');
-          }
+        token: ${{ secrets.GITHUB_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          ¡El despliegue de previsualización está listo! 🎉
+
+          Puedes revisar los cambios en vivo aquí:
+          **[${{ steps.netlify-deploy.outputs.preview_url }}](${{ steps.netlify-deploy.outputs.preview_url }})**
+        update-mode: replace

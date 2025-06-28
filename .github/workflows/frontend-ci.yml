@@ -60,41 +60,48 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Deploy to Netlify (Preview or Prod)
+      id: netlify_deploy
       run: |
-        BRANCH_NAME=${{ github.head_ref || github.ref_name }}
-        
+        BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+
         if [ "$BRANCH_NAME" = "main" ]; then
           echo "Deploying to production..."
           netlify deploy --dir=dist --prod \
-            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID \
+            --json > deploy_output.json
         else
           echo "Deploying preview from branch: $BRANCH_NAME"
           netlify deploy --dir=dist \
-            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID \
+            --json > deploy_output.json
         fi
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
-    - name: Set Netlify Preview URL
+    - name: Generate URL Preview
       id: url_preview
-      run: echo "NETLIFY_PREVIEW_URL=https://${GITHUB_HEAD_REF}--your-site.netlify.app" >> $GITHUB_OUTPUT
+      if: github.ref != 'refs/heads/main'
+      run: |
+        PREVIEW_URL=$(jq -r '.deploy_url' deploy_output.json)
+        echo "netlify_preview_url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
 
-    - name: Comment Preview URL on PR
+    - name: Comment URL Preview on PR
       uses: actions/github-script@v7
-      if: github.event_name == 'pull_request' && github.head_ref != 'main'
+      if: github.ref != 'refs/heads/main'
       with:
         script: |
-          const issueNumber = context.payload.pull_request.number
-          const previewUrl = "${{ steps.url_preview.outputs.NETLIFY_PREVIEW_URL }}"
-
-          if (issueNumber && previewUrl) {
+          const previewUrl = "${{ steps.url_preview.outputs.netlify_preview_url }}";
+          const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            commit_sha: context.sha,
+          });
+          if (pulls.length > 0) {
+            const pr = pulls[0];
             await github.rest.issues.createComment({
-              issue_number: issueNumber,
+              issue_number: pr.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `🚀 **Preview Ready!**\n\n🔗 [View Deployment](${previewUrl})`
-            })
+              body: `🚀 **Preview URL:**\n\n${previewUrl}`
+            });
           } else {
-            console.log('No PR or URL found.')
+            console.log('No pull request found for this commit.');
           }

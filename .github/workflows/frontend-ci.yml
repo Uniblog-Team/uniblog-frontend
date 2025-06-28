@@ -75,3 +75,26 @@ jobs:
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+    - name: Set Netlify Preview URL
+      id: url_preview
+      run: echo "NETLIFY_PREVIEW_URL=https://${GITHUB_HEAD_REF}--your-site.netlify.app" >> $GITHUB_OUTPUT
+
+    - name: Comment Preview URL on PR
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request' && github.head_ref != 'main'
+      with:
+        script: |
+          const issueNumber = context.payload.pull_request.number
+          const previewUrl = "${{ steps.url_preview.outputs.NETLIFY_PREVIEW_URL }}"
+
+          if (issueNumber && previewUrl) {
+            await github.rest.issues.createComment({
+              issue_number: issueNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 **Preview Ready!**\n\n🔗 [View Deployment](${previewUrl})`
+            })
+          } else {
+            console.log('No PR or URL found.')
+          }

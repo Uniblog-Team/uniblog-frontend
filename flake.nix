@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "Flake de desarrollo para Uniblog-frontend";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";

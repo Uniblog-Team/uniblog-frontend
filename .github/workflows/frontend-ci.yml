@@ -17,6 +17,11 @@ jobs:
       matrix:
         node-version: [22.x]
 
+    permissions:
+      pull-requests: write
+      issues: write # Necesario para crear/actualizar comentarios en el PR
+      contents: read
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4 # Acción estándar para descargar tu código
@@ -29,19 +34,20 @@ jobs:
       uses: actions/setup-node@v4 # Acción para configurar Node.js
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm' # Habilitar caché para dependencias de npm (acelera ejecuciones futuras)
-        # Si usas yarn, cambia 'npm' por 'yarn' arriba y los comandos de abajo
+        cache: 'npm'
+
+    - name: Install Netlify
+      run: npm install -g netlify-cli
 
     - name: Install dependencies
-      run: npm ci # 'npm ci' es mejor para CI, instala versiones exactas del package-lock.json
-      # Si usas yarn: run: yarn install --frozen-lockfile
+      run: npm ci
 
     - name: Run Linter (ESLint)
-      run: npm run lint # ASUNCIÓN: Tienes un script 'lint' en tu package.json (ej: "lint": "eslint .")
+      run: npm run lint
       # Si el comando falla, el workflow fallará
 
     - name: Build Project
-      run: npm run build # ASUNCIÓN: Tienes un script 'build' en tu package.json
+      run: npm run build
       # Esto verifica que el proyecto compile sin errores
 
 
@@ -57,3 +63,39 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Deploy to Netlify and Capture URL
+      id: netlify-deploy
+      run: |
+        BRANCH_NAME=${{ github.head_ref || github.ref_name }}
+        
+        if [ "$BRANCH_NAME" = "main" ]; then
+          echo "Deploying to production..."
+          netlify deploy --dir=dist --prod \
+            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+        else
+          echo "Deploying preview from branch: $BRANCH_NAME"
+          DEPLOY_OUTPUT=$(netlify deploy --dir=dist --json \
+            --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID)
+          
+          PREVIEW_URL=$(echo $DEPLOY_OUTPUT | jq -r .deploy_url)
+          
+          echo "Preview URL: $PREVIEW_URL"
+          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+        fi
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+    - name: Post Preview URL to PR
+      if: github.event_name == 'pull_request' && steps.netlify-deploy.outputs.preview_url
+      uses: peter-evans/create-or-update-comment@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          ¡El despliegue de previsualización está listo! 🎉
+
+          Puedes revisar los cambios en vivo aquí:
+          **[${{ steps.netlify-deploy.outputs.preview_url }}](${{ steps.netlify-deploy.outputs.preview_url }})**
+        edit-mode: replace

@@ -19,7 +19,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
+/* a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
@@ -30,7 +30,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
@@ -71,4 +70,11 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+} */
+
+@font-face {
+  font-family: 'TanMonCheri';
+  src: url('/fonts/tan-mon-cheri.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }

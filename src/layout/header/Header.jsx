@@ -1,0 +1,70 @@
+import { red } from "@mui/material/colors";
+import "./Header.css";
+import { AppBar, Button, Toolbar, Typography } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
+
+export default function Header() {
+    
+    const lightred = red[100];
+    const navigate = useNavigate();
+
+    return (
+        <AppBar
+            position="static"
+            elevation={0}
+            sx={{
+                backgroundColor: lightred,
+                borderBottom: '2px solid black',
+                color: 'black',
+            }}    
+        >
+            <Toolbar>
+                <Typography
+                 variant="h6" 
+                 component="div"
+                 sx={{ flexGrow: 1, fontFamily: 'TanMonCheri, sans-serif', fontWeight: 'bold' }}
+                >
+                    Uniblog
+                </Typography>
+            <Button
+                variant="contained"
+                disableElevation
+                onClick={() => navigate('/login')}
+
+                sx={{
+                    backgroundColor: 'black', // Fondo negro
+                    color: 'white',           // Letra blanca
+                    borderRadius: '20px',     // Bordes redondeados
+                    padding: '6px 16px',      // Un poco de padding para que se vea mejor
+                    textTransform: 'none',    // Para que "Inicia" no se ponga en mayúsculas automáticamente
+                    fontWeight: 'bold',       // Letra en negrita
+                    '&:hover': {              // Estilo al pasar el mouse por encima
+                        backgroundColor: 'grey.800', // Un gris oscuro, un poco más claro que el negro
+                    },
+                }}
+            >
+                Inicia
+            </Button>
+                        <Button
+                variant="contained"
+                onClick={() => navigate("/register")}
+                disableElevation
+                sx={{
+                    backgroundColor: 'black', // Fondo negro
+                    color: 'white',           // Letra blanca
+                    borderRadius: '20px',     // Bordes redondeados
+                    padding: '6px 16px',      // Un poco de padding para que se vea mejor
+                    textTransform: 'none',    // Para que "Inicia" no se ponga en mayúsculas automáticamente
+                    fontWeight: 'bold',       // Letra en negrita
+                    '&:hover': {              // Estilo al pasar el mouse por encima
+                        backgroundColor: 'grey.800', // Un gris oscuro, un poco más claro que el negro
+                    },
+                }}
+            >
+                Registro
+            </Button>
+            </Toolbar>
+
+        </AppBar>
+    )
+}

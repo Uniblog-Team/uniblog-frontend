@@ -1,12 +1,56 @@
-# React + Vite
+# Uniblog frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Cómo ejecutar la app (Vite + React)
 
-Currently, two official plugins are available:
+Este proyecto utiliza **[Vite](https://vitejs.dev/)** como entorno de desarrollo rápido y **React** como biblioteca principal de interfaz.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Instalación de dependencias
 
-## Expanding the ESLint configuration
+Asegúrate de tener [Node.js](https://nodejs.org/) instalado (versión recomendada: 18+). Luego ejecuta:
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+```
+
+Esto instalará todas las dependencias definidas en `package.json`.
+
+---
+
+### Correr la aplicación en desarrollo
+
+Para iniciar el servidor de desarrollo:
+
+```bash
+npm run dev
+```
+
+Esto levantará la app en `http://localhost:5173` por defecto. El navegador se recargará automáticamente al hacer cambios.
+
+---
+
+### Linting del código
+
+Este proyecto puede incluir herramientas como **ESLint** y **Prettier** para mantener la calidad del código.
+
+Para correr el linter:
+
+```bash
+npm run lint
+```
+
+---
+
+### Ejecutar pruebas
+
+Para ejecutar las pruebas mediante **jest** usar:
+
+```bash
+npm run test
+```
+
+Para modo interactivo con recarga automática:
+
+```bash
+npm run test:watch
+```
+

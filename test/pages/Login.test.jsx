@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import Login from '../src/pages/login/Login';
+import Login from '../../src/pages/login/Login';
 
 // Mock para useNavigate
 const mockNavigate = jest.fn();

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import Registro from '../src/pages/register/register';
+import Registro from '../../src/pages/register/register';
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({

@@ -14,7 +14,7 @@ import Paper from '@mui/material/Paper';
 import { getInitials } from '../data/blogData';
 
 const BlogPostContent = ({ blog }) => {
-  if (!blog) return null; // O un mensaje más elegante
+  if (!blog) return null;
 
   const formattedDate = new Date(blog.publicationDate).toLocaleDateString('es-ES', {
     year: 'numeric',

@@ -49,27 +49,20 @@ const BlogPreviewCard = ({
           boxShadow: 6,
         },
         display: 'flex', // Añadido para controlar mejor la estructura interna si es necesario
-        flexDirection: 'column', // Asegura que CardContent esté debajo de CardMedia
-        // Opcional: si quieres que todas las tarjetas tengan la misma altura
+        flexDirection: 'column',
         // height: '100%', // Descomenta si tu Grid item padre tiene display: flex y quieres igualar alturas
       }}
       onClick={() => onClick(id)}
     >
       <CardMedia
         component="img"
-        // Quitamos el height fijo en pixels
         // height="190"
         image={imageUrl || 'https://via.placeholder.com/345x190?text=Sin+Imagen'}
         alt={title || 'Título del blog'}
         sx={{
-          // Mantenemos una relación de aspecto para la imagen (ej. 16:9)
-          // Esto hará que la altura se ajuste en proporción al ancho disponible
-          aspectRatio: '16/9', // Puedes ajustar esto (e.g., '3/2', '4/3', '1/1')
-          // Esto es CLAVE: la imagen cubrirá el área, recortándose si es necesario,
-          // sin perder su proporción ni estirar el contenedor.
+          aspectRatio: '16/9',
+
           objectFit: 'cover',
-          // Opcional: si quieres una altura máxima en caso de que el aspectRatio haga la imagen muy alta en anchos pequeños
-          // maxHeight: 200, // Por ejemplo
         }}
       />
       <CardContent sx={{ flexGrow: 1 }}> {/* flexGrow permite que CardContent se expanda si la Card tiene altura fija */}

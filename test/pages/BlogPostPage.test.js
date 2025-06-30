@@ -1,16 +1,15 @@
 /* eslint-disable no-undef */
-// src/pages/BlogPostPage.test.jsx
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import BlogPostPage from '../../src/pages/bloglistpage/BlogPostPage'; // Ajusta la ruta si es necesario
-import { mockBlogPostsData } from '../../src/data/blogData'; // Ajusta la ruta
+import BlogPostPage from '../../src/pages/bloglistpage/BlogPostPage';
+import { mockBlogPostsData } from '../../src/data/blogData';
 
 // Mockear los hooks de react-router-dom
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // Importa y conserva el comportamiento predeterminado
+  ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
   useNavigate: () => mockNavigate,
 }));
@@ -20,7 +19,6 @@ jest.mock('react-router-dom', () => ({
 jest.mock('../../src/components/BlogPostContent', () => ({ blog }) => (
     <div data-testid="blog-post-content">
       <h2>{blog.title}</h2>
-      {/* Usar contentMarkdown y asegurarse de que exista antes de substring */}
       <p>{blog.contentMarkdown ? blog.contentMarkdown.substring(0, 50) : 'Contenido no disponible'}...</p>
     </div>
   ));
@@ -30,8 +28,6 @@ describe('BlogPostPage', () => {
   beforeEach(() => {
     // Limpiar mocks antes de cada prueba
     jest.clearAllMocks();
-    // Por defecto, useParams devuelve un ID válido para la mayoría de las pruebas
-    // Se puede sobrescribir en pruebas específicas si es necesario
     require('react-router-dom').useParams.mockReturnValue({ blogId: mockBlogPostsData[0].id });
   });
 
@@ -87,7 +83,6 @@ describe('BlogPostPage', () => {
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 
     // 4. Verificar que el botón "Volver" del estado de error está presente
-    // El texto puede ser solo "Volver" en el estado de error
     expect(screen.getByRole('button', { name: /Volver/i })).toBeInTheDocument();
   });
 

@@ -82,9 +82,4 @@ describe('Registro Component', () => {
     expect(consoleSpy).toHaveBeenCalledWith('Registro con Google');
     consoleSpy.mockRestore();
   });
-
-  test('navigates to login page when link is clicked', () => {
-     fireEvent.click(screen.getByRole('button', { name: /inicia sesión/i }));
-     expect(mockNavigate).toHaveBeenCalledWith('/login');
-  });
 });

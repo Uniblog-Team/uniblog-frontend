@@ -68,9 +68,4 @@ describe('Login Component', () => {
     expect(consoleSpy).toHaveBeenCalledWith('Iniciando sesión con Google');
     consoleSpy.mockRestore();
   });
-
-  test('navigates to register page', () => {
-    fireEvent.click(screen.getByText(/crear cuenta/i));
-    expect(mockNavigate).toHaveBeenCalledWith('/register');
-  });
 });

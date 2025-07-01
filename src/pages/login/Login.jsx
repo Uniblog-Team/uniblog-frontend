@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../layout/auth/AuthLayout';
 import {
@@ -57,7 +57,7 @@ const Login = () => {
           <Button sx={{ textTransform: 'none', p: 0, minWidth: 'auto', color: 'common.black', fontWeight: 500 }}>
             ¿Olvidaste tu contraseña?
           </Button>
-          <Button onClick={() => navigate("/register")} sx={{ textTransform: 'none', p: 0, minWidth: 'auto', color: 'primary.main', fontWeight: 500 }}>
+          <Button onClick={() => navigate("/register",  { replace: true }) } sx={{ textTransform: 'none', p: 0, minWidth: 'auto', color: 'primary.main', fontWeight: 500 }}>
             Crear cuenta
           </Button>
         </Box>

@@ -71,6 +71,6 @@ describe('Login Component', () => {
 
   test('navigates to register page', () => {
     fireEvent.click(screen.getByText(/crear cuenta/i));
-    expect(mockNavigate).toHaveBeenCalledWith('/register');
+    expect(mockNavigate).toHaveBeenCalledWith('/register', { replace: true });
   });
 });

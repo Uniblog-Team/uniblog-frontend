@@ -1,4 +1,3 @@
-// src/components/CategoryFilter.jsx
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';

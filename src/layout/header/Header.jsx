@@ -34,7 +34,7 @@ export default function Header() {
                 sx={{
                     backgroundColor: 'black', // Fondo negro
                     color: 'white',           // Letra blanca
-                    borderRadius: '20px',     // Bordes redondeados (ajusta el valor a tu gusto)
+                    borderRadius: '20px',     // Bordes redondeados
                     padding: '6px 16px',      // Un poco de padding para que se vea mejor
                     textTransform: 'none',    // Para que "Inicia" no se ponga en mayúsculas automáticamente
                     fontWeight: 'bold',       // Letra en negrita
@@ -52,7 +52,7 @@ export default function Header() {
                 sx={{
                     backgroundColor: 'black', // Fondo negro
                     color: 'white',           // Letra blanca
-                    borderRadius: '20px',     // Bordes redondeados (ajusta el valor a tu gusto)
+                    borderRadius: '20px',     // Bordes redondeados
                     padding: '6px 16px',      // Un poco de padding para que se vea mejor
                     textTransform: 'none',    // Para que "Inicia" no se ponga en mayúsculas automáticamente
                     fontWeight: 'bold',       // Letra en negrita

@@ -57,7 +57,7 @@ const Login = () => {
           <Button sx={{ textTransform: 'none', p: 0, minWidth: 'auto', color: 'common.black', fontWeight: 500 }}>
             ¿Olvidaste tu contraseña?
           </Button>
-          <Button onClick={() => navigate("/register")} sx={{ textTransform: 'none', p: 0, minWidth: 'auto', color: 'primary.main', fontWeight: 500 }}>
+          <Button onClick={() => navigate("/register",  { replace: true }) } sx={{ textTransform: 'none', p: 0, minWidth: 'auto', color: 'primary.main', fontWeight: 500 }}>
             Crear cuenta
           </Button>
         </Box>

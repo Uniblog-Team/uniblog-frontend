@@ -78,7 +78,7 @@ const Registro = () => {
 
         <Typography variant="body2" sx={{ textAlign: 'center', mt: 3, color: 'common.black' }}>
           ¿Ya tienes una cuenta?{' '}
-          <Button onClick={() => navigate("/login")} sx={{ textTransform: 'none', p: 0, minWidth: 'auto', color: 'primary.main', fontWeight: 500 }} data-testid="login-button">
+          <Button onClick={() => navigate("/login",  { replace: true })} sx={{ textTransform: 'none', p: 0, minWidth: 'auto', color: 'primary.main', fontWeight: 500 }} data-testid="login-button">
             Inicia sesión
           </Button>
         </Typography>

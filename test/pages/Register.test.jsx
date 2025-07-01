@@ -35,24 +35,29 @@ describe('Registro Component', () => {
   // });
 
   test('allows user to fill registration form fields', () => {
-    fireEvent.change(screen.getByLabelText(/nombre completo/i), { target: { value: 'Juan Pérez' } });
-    fireEvent.change(screen.getByLabelText(/correo electrónico/i), { target: { value: 'test@example.com' } });
-    fireEvent.change(screen.getByTestId('password-input'), { target: { value: 'password123' } });
-    fireEvent.change(screen.getByTestId('confirm-password-input'), { target: { value: 'password123' } });
+      fireEvent.change(screen.getByLabelText(/nombre completo/i), { target: { value: 'Juan Pérez' } });
+      fireEvent.change(screen.getByLabelText(/correo electrónico/i), { target: { value: 'test@example.com' } });
 
-    expect(screen.getByLabelText(/nombre completo/i).value).toBe('Juan Pérez');
+      // --- CAMBIO AQUÍ ---
+      // Buscamos un label que COMIENCE con "Contraseña" para incluir el asterisco (*)
+      fireEvent.change(screen.getByLabelText(/^contraseña/i), { target: { value: 'password123' } });
+      fireEvent.change(screen.getByLabelText(/confirmar contraseña/i), { target: { value: 'password123' } });
+
+      expect(screen.getByLabelText(/nombre completo/i).value).toBe('Juan Pérez');
   });
 
+
   test('submits form and navigates to /inicio with valid data', () => {
-    fireEvent.change(screen.getByLabelText(/nombre completo/i), { target: { value: 'Juan Pérez' } });
-    fireEvent.change(screen.getByLabelText(/correo electrónico/i), { target: { value: 'test@example.com' } });
+      fireEvent.change(screen.getByLabelText(/nombre completo/i), { target: { value: 'Juan Pérez' } });
+      fireEvent.change(screen.getByLabelText(/correo electrónico/i), { target: { value: 'test@example.com' } });
 
-    fireEvent.change(screen.getByTestId('password-input'), { target: { value: 'password123' } });
-    fireEvent.change(screen.getByTestId('confirm-password-input'), { target: { value: 'password123' } });
+      // --- CAMBIO AQUÍ ---
+      fireEvent.change(screen.getByLabelText(/^contraseña/i), { target: { value: 'password123' } });
+      fireEvent.change(screen.getByLabelText(/confirmar contraseña/i), { target: { value: 'password123' } });
 
-    fireEvent.click(screen.getByRole('button', { name: /registro/i }));
+      fireEvent.click(screen.getByRole('button', { name: /registro/i }));
 
-    expect(mockNavigate).toHaveBeenCalledWith('/inicio');
+      expect(mockNavigate).toHaveBeenCalledWith('/inicio');
   });
 
 
@@ -63,17 +68,19 @@ describe('Registro Component', () => {
   });
 
   test('shows an error message if passwords do not match', async () => {
-    fireEvent.change(screen.getByLabelText(/nombre completo/i), { target: { value: 'Juan Pérez' } });
-    fireEvent.change(screen.getByLabelText(/correo electrónico/i), { target: { value: 'test@example.com' } });
-    fireEvent.change(screen.getByTestId('password-input'), { target: { value: 'password123' } });
-    fireEvent.change(screen.getByTestId('confirm-password-input'), { target: { value: 'password456' } });
-    
-    fireEvent.click(screen.getByRole('button', { name: /registro/i }));
+      fireEvent.change(screen.getByLabelText(/nombre completo/i), { target: { value: 'Juan Pérez' } });
+      fireEvent.change(screen.getByLabelText(/correo electrónico/i), { target: { value: 'test@example.com' } });
+      
+      // --- CAMBIO AQUÍ ---
+      fireEvent.change(screen.getByLabelText(/^contraseña/i), { target: { value: 'password123' } });
+      fireEvent.change(screen.getByLabelText(/confirmar contraseña/i), { target: { value: 'password456' } });
+      
+      fireEvent.click(screen.getByRole('button', { name: /registro/i }));
 
-    const errorMessage = await screen.findByText('Las contraseñas no coinciden');
-    expect(errorMessage).toBeInTheDocument();
+      const errorMessage = await screen.findByText('Las contraseñas no coinciden');
+      expect(errorMessage).toBeInTheDocument();
 
-    expect(mockNavigate).not.toHaveBeenCalled();
+      expect(mockNavigate).not.toHaveBeenCalled();
   });
   
   test('triggers Google registration function', () => {

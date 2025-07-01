@@ -22,10 +22,6 @@ export default function Layout() {
       >
         <Outlet /> {/* Aquí se renderizarán las rutas hijas */}
       </Box>
-      {/* Podrías agregar un Footer aquí si lo necesitas */}
-      {/* <Box component="footer" sx={{ p: 2, backgroundColor: 'grey.200' }}>
-          Mi Footer
-        </Box> */}
     </Box>
   );
 }

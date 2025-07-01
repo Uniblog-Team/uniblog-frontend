@@ -25,7 +25,7 @@ root.render(
             <Route index path="/inicio" element={<BlogListPage />} />
             <Route path="/blog/:blogId" element={<BlogPostPage />} /> 
             {/* Nueva ruta */}
-            {/* Aquí puedes agregar más rutas que usarán el mismo Layout */}
+            {/* =Rutas que usarán el mismo Layout */}
             {/* <Route path="/otra-pagina" element={<OtraPagina />} /> */}
           </Route>
            <Route path="/register" element={<Register />} />

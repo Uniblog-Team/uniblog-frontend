@@ -1,12 +1,9 @@
-// src/pages/home/Home.jsx
 import React from 'react';
 import { Box, Button, Container, Grid2, Typography } from '@mui/material';
-// Asegúrate de que la importación de Grid2 sea la correcta para tu versión de MUI
 import { darken, alpha } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
-// Ruta a tu imagen. Asegúrate de que esté accesible desde la carpeta `public`
-const imageUrl = '/images/uniblog-home.png'; // ej: public/images/univalle-logo.webp
+const imageUrl = '/images/uniblog-home.png';
 
 export default function Home() {
   const navigate = useNavigate();

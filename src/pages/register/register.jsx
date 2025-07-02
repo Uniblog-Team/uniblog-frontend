@@ -54,10 +54,10 @@ const Registro = () => {
         )}
 
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField name="nombre" label="Nombre completo" variant="outlined" fullWidth required value={formData.nombre} onChange={handleChange} inputProps={{ 'data-testid': 'nombre-input' }} />
-          <TextField name="email" label="Correo electrónico" variant="outlined" fullWidth type="email" required value={formData.email} onChange={handleChange} inputProps={{ 'data-testid': 'email-input' }} />
-          <TextField name="password" label="Contraseña" variant="outlined" fullWidth type="password" required value={formData.password} onChange={handleChange} inputProps={{ 'data-testid': 'password-input' }} />
-          <TextField name="confirmPassword" label="Confirmar contraseña" variant="outlined" fullWidth type="password" required value={formData.confirmPassword} onChange={handleChange} inputProps={{ 'data-testid': 'confirm-password-input' }} />
+          <TextField name="nombre" label="Nombre completo" variant="outlined" fullWidth required value={formData.nombre} onChange={handleChange} slotProps={{ 'data-testid': 'nombre-input' }} />
+          <TextField name="email" label="Correo electrónico" variant="outlined" fullWidth type="email" required value={formData.email} onChange={handleChange} slotProps={{ input: { 'data-testid': 'email-input' } }} />
+          <TextField name="password" label="Contraseña" variant="outlined" fullWidth type="password" required value={formData.password} onChange={handleChange} slotProps={{ input: { 'data-testid': 'password-input' } }} />
+          <TextField name="confirmPassword" label="Confirmar contraseña" variant="outlined" fullWidth type="password" required value={formData.confirmPassword} onChange={handleChange} slotProps={{ input: { 'data-testid': 'confirm-password-input' } }}  />
           
           <PrimaryAuthButton type="submit" variant="contained" fullWidth data-testid="register-button">
             Registro
